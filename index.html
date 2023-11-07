@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input id="messageInput" type="text" placeholder="Введіть повідомлення">
+<button id="sendButton">Відправити</button>
+<ul id="messageList"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+<script>
+    const socket = io('http://127.0.0.1:3000', { transports: ['websocket'] });
+
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const messageList = document.getElementById('messageList');
+
+    sendButton.addEventListener('click', () => {
+        const message = messageInput.value;
+        const currentURL = window.location.href;
+        const urlMsg = currentURL + ' : ' + message;
+        socket.emit('message', urlMsg); // Відправка повідомлення на сервер
+        messageInput.value = '';
+    });
+
+    // Обробка прийому повідомлень від сервера
+    socket.on('message', (message) => {
+        const li = document.createElement('li');
+        li.textContent = message;
+        messageList.appendChild(li);
+    });
+</script>
+</body>
+</html>
